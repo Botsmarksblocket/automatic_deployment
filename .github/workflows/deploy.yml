@@ -3,7 +3,7 @@ name: Deploy to GitHub Pages
 on:
   push:
     branches:
-      - master  # Trigger when changes are pushed to the main branch
+      - main  # Trigger when changes are pushed to the main branch
 
 jobs:
   deploy:
@@ -21,6 +21,8 @@ jobs:
       - name: Deploy to GitHub Pages
         uses: peaceiris/actions-gh-pages@v3
         with:
-          folder: ./  # Deploy from the root of the repository
-          branch: master  # Deploy from the main branch
-          target-folder: /  # Deploy to the root of the GitHub Pages site
+          publish_dir: ./  # Deploy from the root of the repository
+          publish_branch: master  # Deploy to the gh-pages branch
+          github_token: ${{ secrets.GITHUB_TOKEN }}  # Use GitHub's built-in token for authentication
+          user_name: "GitHub Actions"  # Name for the commit
+          user_email: "actions@github.com"  # Email for the commit
