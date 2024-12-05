@@ -1,28 +1,30 @@
-name: Deploy to GitHub Pages
+name: Build and Deploy
 
 on:
   push:
     branches:
-      - master  # Trigger deployment when changes are pushed to the master branch
+      - master
 
 jobs:
-  deploy:
-    runs-on: ubuntu-latest  # Use the latest Ubuntu runner
-
+  build-and-deploy:
+    runs-on: ubuntu-latest
+    concurrency: ci-${{github.ref}}
     steps:
-    - name: Checkout repository
-      uses: actions/checkout@v4  # Checkout the code from the repository
+      - name: Checkout
+        uses: actions/checkout@v2
 
-    - name: Set up Hugo
-      uses: peaceiris/actions-hugo@v3  # Set up Hugo
-      with:
-        hugo-version: 'latest'  # Use the latest version of Hugo
+      - name: Configure Node
+        uses: actions/setup-node@v1
+        with:
+          node-version: '12.18.4'
 
-    - name: Build the site
-      run: hugo --minify  # Build the site with Hugo and minimize the output
+      - name: Install
+        run: |
+          npm ci
+          npm run build
 
-    - name: Deploy to GitHub Pages
-      uses: peaceiris/actions-gh-pages@v3  # GitHub Action to deploy the built site
-      with:
-        github_token: ${{ secrets.GITHUB_TOKEN }}  # GitHub token to authenticate
-        publish_dir: ./public  # Directory containing the generated website files
+      - name: Deploy
+        uses: JamesIves/github-pages-deploy-action@v4
+        with:
+          folder: build
+          branch: master
